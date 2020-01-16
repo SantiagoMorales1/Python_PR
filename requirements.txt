@@ -2,3 +2,4 @@ click
 pillow
 boto3
 pandas
+progress

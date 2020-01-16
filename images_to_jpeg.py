@@ -86,3 +86,4 @@ def main(path, output_dir, max_size, dry, overwrite):
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.INFO)
 	main()
+    
