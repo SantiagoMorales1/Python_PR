@@ -1,23 +1,47 @@
 # -*- coding: utf-8 -*-
-
 from handler.file import all_files_in, walk_files
-from typing import List
+from typing import List, Tuple
 from handler.xml import class_xml_to_csv, xml_classes_dataframe, xml_callses_fix
 from handler.image import is_image
 from progress.bar import Bar
 import pandas as pd
 import numpy as np
 import logging
-
 import click  
 
-def group_name(route, groups):
+
+def group_name(route: str, groups: Tuple[str, str]):
     for group in groups:
         if group in route:
             return group
     else:
         return None
 
+def check_bbox_size(row, tolerance=33):
+    x_value = row['xmax'] - row['xmin'] 
+    y_value = row['ymax'] - row['ymin'] 
+    if  x_value < tolerance or y_value < tolerance or\
+        row['xmin'] > row['width'] or\
+        row['xmax'] > row['width'] or\
+        row['ymax'] > row['height'] or\
+        row['ymin'] > row['height']:
+        return 1
+    else:
+        return 0
+    
+    
+
+def to_frequencies(df: pd.DataFrame)-> pd.DataFrame:
+    df['unit'] = 1
+    df['class_name'] = df['class_name'].astype("category")
+    df['group'] = df['group'].astype("category")
+    table = pd.pivot_table(df,index=["class_name"], 
+                       columns=['group'], 
+                       values=['unit'], 
+                       aggfunc='count', 
+                       fill_value=0,
+                       margins=True)
+    return table
 
 def pre_process(path: str, groups: List[str]) -> pd.DataFrame:
     """[summary]
@@ -45,8 +69,11 @@ def pre_process(path: str, groups: List[str]) -> pd.DataFrame:
         classes['_'+group] = classes['xmls_path'].apply(lambda x:  1 if group in x else 0)
 
     classes['group'] = classes['xmls_path'].apply(lambda x: group_name(x, groups))
+    classes['bboxes'] = classes.apply(check_bbox_size, axis=1)
+    freq = to_frequencies(classes)
 
-    return classes
+
+    return classes, freq
 
 
 @click.command()
@@ -55,8 +82,11 @@ def pre_process(path: str, groups: List[str]) -> pd.DataFrame:
 @click.option("--to_excel", "-e", type=str, required=False, help="output file for excel -- Must not exist")
 @click.option("--groups", "-g", type=click.Tuple([str,str]), default=("campo","estudio"), required=True, help="output file for csv -- Must not exist")
 def main(path, frequencies, to_excel, groups):
-    classes = pre_process(path, groups)
+    classes, freq = pre_process(path, groups)
+
     x = classes.groupby('class_name').count()[['xmls_path']]
+    dgroups = {k:0 for k in groups}
+    dgroups['All'] = 0
 
     logging.info("writting files")
     logging.info(f"CSV > {frequencies} ")
@@ -66,7 +96,8 @@ def main(path, frequencies, to_excel, groups):
 
     writer = pd.ExcelWriter(to_excel, engine='xlsxwriter')
     classes.to_excel(writer, sheet_name="data")
-    x.to_excel(writer, sheet_name="x")
+    x.to_excel(writer, sheet_name="prescence")
+    freq.to_excel(writer, sheet_name="frequencies")
     writer.save()
 
 if __name__ == '__main__':
