@@ -52,15 +52,22 @@ def pre_process(path: str, groups: List[str]) -> pd.DataFrame:
 @click.command()
 @click.option("--path", "-p", type=click.Path(), required=True, help="path to files -- Must exist")
 @click.option("--frequencies", "-q", type=str, required=True, help="output file for csv -- Must not exist")
+@click.option("--to_excel", "-e", type=str, required=False, help="output file for excel -- Must not exist")
 @click.option("--groups", "-g", type=click.Tuple([str,str]), default=("campo","estudio"), required=True, help="output file for csv -- Must not exist")
-def main(path, frequencies, groups):
+def main(path, frequencies, to_excel, groups):
     classes = pre_process(path, groups)
-    x = classes.groupby('class_name').count()['ref_image']
+    x = classes.groupby('class_name').count()[['xmls_path']]
 
     logging.info("writting files")
-    writer = pd.ExcelWriter(frequencies, engine='xlsxwriter')
-    classes.to_excel(writer, sheet_name="data", index=False)
-    x.to_excel(writer, sheet_name="classes_share", index=False)
+    logging.info(f"CSV > {frequencies} ")
+    classes.to_csv(frequencies, index=False)
+
+    logging.info(f"XLSX > {to_excel}")
+
+    writer = pd.ExcelWriter(to_excel, engine='xlsxwriter')
+    classes.to_excel(writer, sheet_name="data")
+    x.to_excel(writer, sheet_name="x")
+    writer.save()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
