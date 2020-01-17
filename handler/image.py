@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from handler.file import remove_file_safely, get_file_name, get_extension
 from PIL import Image
 import logging
 from typing import Tuple
@@ -12,13 +12,25 @@ def is_image(filename_in: str)->bool:
         return False
 
 def image_size(path: str)-> Tuple[int, int]:
-	try:
-		with Image.open(path) as img:
-			return img.size
-	except:
-		return None, None
+    try:
+        with Image.open(path) as img:
+            return img.size
+    except:
+        return None, None
+
+def convert_to_jpeg_and_override(image_in):
+    im = load_as_irg(image_in)
+    remove_file_safely(image_in)
+    new_name = get_file_name(image_in).replace(get_extension(image_in), ".jpg")
+    save_as_jpeg(im, new_name)
 
 # methods on images
+
+def load_as_irg(img_file: str)-> Image.Image:
+    im = load_image(img_file)
+    im_rgb = to_rgb(im)
+    return im_rgb
+
 def load_image(img_file: str)-> Image.Image:
     return Image.open(img_file, mode='r')
 

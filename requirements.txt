@@ -3,3 +3,5 @@ pillow
 boto3
 pandas
 progress
+xlsxwriter
+openpyxl

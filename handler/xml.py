@@ -40,6 +40,15 @@ def xml_classes_dataframe(xmls):
     df = pd.DataFrame(csv, columns=COLUMNS)
     return df
 
+def xml_callses_fix(xmls):
+    fixed = []
+    with Bar('fixing xmls', max=len(xmls)) as bar:
+        for xml in xmls:
+            if fix_reference_filename(xml):
+                fixed += xmls
+            bar.next()
+    return fixed
+
 
 def freq_nodes(xmls: List[str]):
     dict = {}
