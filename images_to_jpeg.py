@@ -10,7 +10,8 @@ def is_image(filename_in):
 	try:
 		with Image.open(filename_in, mode='r') as _:
 			logging.info(
-				f"{filename_in} is a valid image with mode={_.mode} format={_.format} size=[width:{_.width}, height:{_.height}] info={_.info}")
+				f"{filename_in} is a valid image with mode={_.mode} format={_.format} size=[width:{_.width}, \
+				height:{_.height}] info={_.info}")
 		return True
 	except:
 		logging.info(f"{filename_in} is NOT an image and will be skipped. ")
