@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
-from handler.file import remove_file_safely, get_file_name, get_extension
-from PIL import Image
 import logging
 from typing import Tuple
 
-def is_image(filename_in: str)->bool:
+from PIL import Image
+
+from handler.file import remove_file_safely, get_file_name, get_extension
+
+
+def is_image(filename_in: str) -> bool:
     try:
         Image.open(filename_in, mode='r')
         return True
     except:
         return False
 
-def image_size(path: str)-> Tuple[int, int]:
+
+def image_size(path: str) -> Tuple[int, int]:
     try:
         with Image.open(path) as img:
             return img.size

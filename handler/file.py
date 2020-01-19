@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import List
 import shutil
+from typing import List
 
-def files_in(path: str, recursive=False, follow_symlinks=False)-> List[str]:
+
+def files_in(path: str, recursive=False, follow_symlinks=False) -> List[str]:
     return walk_files(path=path, recursive=recursive, follow_symlinks=follow_symlinks)
 
 
@@ -12,7 +13,7 @@ def all_files_in(path: str) -> List[str]:
     return files_in(path, recursive=True, follow_symlinks=True)
 
 
-def walk_files_ext(path : str, ext: str, recursive=False) -> List[str]:
+def walk_files_ext(path: str, ext: str, recursive=False) -> List[str]:
     for entry in os.scandir(path):
         if entry.is_file() and entry.name.endswith(ext):
             yield entry.path
@@ -39,10 +40,12 @@ def get_file_name(path: str) -> str:
         file_name, _ = os.path.splitext(path)
         return file_name
 
+
 def move_and_create_dir(src_file, dest_dir):
-    if os.path.isdir(dest_dir) == False:
+    if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir)
     shutil.move(src_file, dest_dir)
+
 
 def remove_file_safely(path: str) -> None:
     if os.path.exists(path) and os.path.isfile(path):

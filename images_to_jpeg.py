@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-import click
-import os
-from PIL import Image
-from handler.file import get_file_name, get_extension, walk_files, all_files_in
 import logging
+import os
+
+import click
+from PIL import Image
+
+from handler.file import get_file_name, get_extension, all_files_in
 
 
 def is_image(filename_in):

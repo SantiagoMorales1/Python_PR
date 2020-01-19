@@ -1,34 +1,35 @@
 # -*- coding: utf-8 -*-
+import logging
+import os
 import xml.etree.ElementTree as ET
+from typing import Tuple, List
+
+import pandas as pd
+from progress.bar import Bar
+
 from handler.file import get_file_name
 from handler.image import image_size
-from typing import Tuple, NamedTuple, List
-from progress.bar import Bar
-import pandas as pd
-import os
-import logging
 
 
 def read_xml(xml_file: str):
     return ET.parse(xml_file)
 
 
-COLUMNS = ["image_path", "xmls_path", "ref_image", "width", \
-           "height", "class_name", "xmin", "ymin", "xmax", "ymax"]
+COLUMNS = ["image_path", "xmls_path", "ref_image", "width", "height", "class_name", "xmin", "ymin", "xmax", "ymax"]
 
 
 def class_xml_to_csv(xml_file: str) -> \
-        Tuple[str, str, str, int, int, str, int, int, int, int]:
+        List[Tuple[str, str, str, int, int, str, int, int, int, int]]:
     root = read_xml(xml_file).getroot()
     img_file = get_file_name(xml_file) + ".jpg"
     width, height = image_size(img_file)
     file_name = root.find('filename').text
     return [(img_file,
              xml_file,
-             file_name,
+             str(file_name),
              width,
              height,
-             member[0].text,
+             str(member[0].text),
              int(member[4][0].text),
              int(member[4][1].text),
              int(member[4][2].text),
@@ -56,7 +57,7 @@ def xml_callses_fix(xmls):
     return fixed
 
 
-def freq_nodes(xmls: List[str]):
+def freq_nodes(xmls: List[str]) -> dict:
     dict = {}
     for f in xmls:
         root = read_xml(f).getroot()

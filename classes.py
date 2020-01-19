@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from handler.file import all_files_in, walk_files
-from typing import List, Tuple
-from handler.xml import class_xml_to_csv, xml_classes_dataframe, xml_callses_fix
-from handler.image import is_image
-from progress.bar import Bar
-import pandas as pd
-import numpy as np
 import logging
+from typing import List, Tuple
+
 import click
+import pandas as pd
+
+from handler.file import all_files_in
+from handler.image import is_image
+from handler.xml import xml_classes_dataframe, xml_callses_fix
 
 
 def group_name(route: str, groups: Tuple[str, str]):
@@ -44,7 +44,7 @@ def to_frequencies(df: pd.DataFrame) -> pd.DataFrame:
     return table
 
 
-def pre_process(path: str, groups: List[str]) -> pd.DataFrame:
+def pre_process(path: str, groups: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """[summary]
     Arguments:
         path {str} -- [description]
