@@ -21,7 +21,7 @@ def walk_files_ext(path: str, ext: str, recursive=False) -> List[str]:
             yield from walk_files_ext(entry.path, ext, recursive)
 
 
-def walk_files(path: str, recursive=True, follow_symlinks=True):
+def walk_files(path: str, recursive: bool = True, follow_symlinks: bool = True) -> List[str]:
     for entry in os.scandir(path):
         if entry.is_file():
             yield entry.path

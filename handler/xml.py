@@ -18,8 +18,7 @@ def read_xml(xml_file: str):
 COLUMNS = ["image_path", "xmls_path", "ref_image", "width", "height", "class_name", "xmin", "ymin", "xmax", "ymax"]
 
 
-def class_xml_to_csv(xml_file: str) -> \
-        List[Tuple[str, str, str, int, int, str, int, int, int, int]]:
+def class_xml_to_csv(xml_file: str) -> List[Tuple[str, str, str, int, int, str, int, int, int, int]]:
     root = read_xml(xml_file).getroot()
     img_file = get_file_name(xml_file) + ".jpg"
     width, height = image_size(img_file)
@@ -37,7 +36,7 @@ def class_xml_to_csv(xml_file: str) -> \
              ) for member in root.findall("object")]
 
 
-def xml_classes_dataframe(xmls):
+def xml_classes_dataframe(xmls: List[str]) -> pd.DataFrame:
     csv = []
     with Bar('Creating df', max=len(xmls)) as bar:
         for xml in xmls:
@@ -70,6 +69,7 @@ def freq_nodes(xmls: List[str]) -> dict:
     return dict
 
 
+# cara a nivel I/O pero barata a nivel memoria
 def fix_reference_filename(xml_file: str) -> bool:
     tree = read_xml(xml_file)
     root = tree.getroot()
@@ -78,6 +78,6 @@ def fix_reference_filename(xml_file: str) -> bool:
     if original != expected:
         root.find('filename').text = expected
         tree.write(xml_file)
-        logging.info(f" update_path --> {xml_file} [{original}]>>[{expected}]")
+        logging.warning(f" update_path_reference --> {xml_file} [{original}]>>[{expected}]")
         return True
     return False
