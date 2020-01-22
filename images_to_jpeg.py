@@ -4,6 +4,7 @@ import os
 
 import click
 from PIL import Image
+from progress.bar import Bar
 
 from handler.file import get_file_name, get_extension, all_files_in
 from handler.image import is_image, convert_to_jpeg_and_override
@@ -11,7 +12,7 @@ from handler.image import is_image, convert_to_jpeg_and_override
 
 def resize_with_aspect(im, filename_in, max_size):
     if max_size == im.size or max_size == (0, 0):
-        logging.info(f"{filename_in} returning image as has correct size.")
+        # logging.info(f"{filename_in} returning image as has correct size.")
         return im
     ratio = min(max_size[0] / im.width, max_size[1] / im.height)
     new_size = (int(ratio * im.width), int(ratio * im.height))
@@ -24,9 +25,6 @@ def convert_to_jpeg(filename_in, filename_out, max_size=(0, 0), overwrite=False)
     logging.info(f"converting {filename_in} to jpeg")
     with Image.open(filename_in, mode='r') as im:
         rgb_im = im.convert('RGB') if im.mode != 'RGB' else im
-        logging.info(f"{filename_in} >> {filename_out}")
-        # if max_size != (0, 0):
-        #	rgb_im = resize_with_aspect(rgb_im,filename_in, max_size)
         if overwrite:
             os.remove(filename_in)
         rgb_im.save(filename_out, "JPEG", optimize=True, quality=95)
@@ -56,16 +54,12 @@ def main(path, output_dir, max_size, dry, overwrite):
     # list all files in folder
     files = all_files_in(path)
     # select images
-    images = filter(is_image, files)
+    images = [file for file in files if is_image(file)]
 
-    for image in images:
-        convert_to_jpeg_and_override(image)
-
-    # for f in images:
-    #     original = f
-    #     target = get_target_jpeg_with_override(f) if overwrite else get_target_jpeg(f, output_dir)
-    #     logging.info(f"{original} >> {target}")
-    #     convert_to_jpeg(original, target, max_size=max_size, overwrite=overwrite)
+    with Bar('fixing images', max=len(images)) as bar:
+        for image in images:
+            convert_to_jpeg_and_override(image)
+            bar.next()
 
     logging.info("DONE")
 

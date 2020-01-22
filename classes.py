@@ -44,14 +44,14 @@ def to_frequencies(df: pd.DataFrame) -> pd.DataFrame:
     return table
 
 
-def pre_process(path: str, groups: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def pre_process(path: str, groups: List[str], fix_xml_ref: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
     logging.info(f"Working on {path} and looking for groups {groups}")
 
-    files = [f for f in all_files_in(path)]  # all files
-    xmls = [f for f in files if f.endswith(".xml")]  # list all xmls in path
-    images = [f for f in files if is_image(f)]  # list all images in path
-    # 1. Coreccion de referencias dentro del XML
-    updated_xmls = xml_reference_fix(xmls)
+    files = [f for f in all_files_in(path)]
+    xmls = [f for f in files if f.endswith(".xml")]
+    images = [f for f in files if is_image(f)]
+
+    updated_xmls = xml_reference_fix(xmls) if fix_xml_ref else []
 
     logging.info(f"Found {len(files)} files: {len(xmls)} xmls (fixed {len(updated_xmls)}) y {len(images)} images")
     classes = xml_classes_dataframe(xmls)
@@ -72,8 +72,9 @@ def pre_process(path: str, groups: List[str]) -> Tuple[pd.DataFrame, pd.DataFram
 @click.option("--to_excel", "-e", type=str, required=False, help="output file for excel -- Must not exist")
 @click.option("--groups", "-g", type=click.Tuple([str, str]), default=("campo", "estudio"), required=True,
               help="output file for csv -- Must not exist")
-def main(path: str, frequencies: str, to_excel: str, groups):
-    classes, freq = pre_process(path, groups)
+@click.option("--fix_xml_ref", is_flag=True, required=False, help="Should the program attempt to fix xml references")
+def main(path: str, frequencies: str, to_excel: str, groups, fix_xml_ref: bool):
+    classes, freq = pre_process(path, groups, fix_xml_ref)
     x = classes.groupby('class_name').count()[['xmls_path']]
     dgroups = {k: 0 for k in groups}
     dgroups['All'] = 0
@@ -83,11 +84,12 @@ def main(path: str, frequencies: str, to_excel: str, groups):
 
     logging.info(f"XLSX > {to_excel}")
 
-    writer = pd.ExcelWriter(to_excel, engine='xlsxwriter')
-    classes.to_excel(writer, sheet_name='data')
-    x.to_excel(writer, sheet_name='prescence')
-    freq.to_excel(writer, sheet_name='frequencies')
-    writer.save()
+    if to_excel:
+        writer = pd.ExcelWriter(to_excel, engine='xlsxwriter')
+        classes.to_excel(writer, sheet_name='data')
+        x.to_excel(writer, sheet_name="prescence")
+        freq.to_excel(writer, sheet_name='frequencies')
+        writer.save()
 
 
 if __name__ == '__main__':

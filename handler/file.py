@@ -5,7 +5,7 @@ import shutil
 from typing import List
 
 
-def files_in(path: str, recursive=False, follow_symlinks=False) -> List[str]:
+def files_in(path: str, recursive=False, follow_symlinks=False):
     """
 Lists all files in a given directory. It is possible to specify if
     :param path: Directory to list all files from.
@@ -31,9 +31,9 @@ def walk_files_ext(path: str, ext: str, recursive: bool = False, follow_symlinks
             yield file
 
 
-def walk_files(path: str, recursive: bool = True, follow_symlinks: bool = True) -> List[str]:
+def walk_files(path: str, recursive: bool = True, follow_symlinks: bool = True):
     """
-
+Lists all files in a given directory. It will follow symbolic links and will operate recursively.
     :param path: Directory to traverse.
     :param recursive: Should the directory be traversed recursively?
     :param follow_symlinks: Should symbolic links be followed?

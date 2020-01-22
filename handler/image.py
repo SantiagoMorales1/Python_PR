@@ -3,8 +3,8 @@ import logging
 from typing import Tuple
 
 from PIL import Image
-import cv2
-from handler.file import remove_file_safely, get_file_name, get_extension
+
+from handler.file import remove_file_safely, get_extension
 
 
 def is_image(filename_in: str) -> bool:
@@ -33,10 +33,10 @@ Opens the image using the PIL framework and returns the size of the image.
         return None, None
 
 
-def convert_to_jpeg_and_override(image_in):
+def convert_to_jpeg_and_override(image_in: str):
     im = load_as_rgb(image_in)
+    new_name = image_in.replace(get_extension(image_in), ".jpg")
     remove_file_safely(image_in)
-    new_name = get_file_name(image_in).replace(get_extension(image_in), ".jpg")
     save_as_jpeg(im, new_name)
 
 
@@ -84,4 +84,13 @@ def resize_with_aspect(im: Image.Image, filename_in: str, max_size: Tuple[int, i
 
 
 def crop(im: int, xmin: int, ymin: int, xmax: int, ymax: int) -> Image.Image:
+    """
+Returns the section of a image between (xmin, y min ) y (xmax, ymax)
+    :param im:
+    :param xmin:
+    :param ymin:
+    :param xmax:
+    :param ymax:
+    :return:
+    """
     return im.crop((xmin, ymin, xmax, ymax)).convert('RGB')
