@@ -6,30 +6,7 @@ import click
 from PIL import Image
 
 from handler.file import get_file_name, get_extension, all_files_in
-
-
-def is_image(filename_in: str) -> bool:
-    """
-This function tries to open the file provided with the Pillow framework.
-    :param filename_in: file to be open as an image
-    :return: True if the file can be treated as an  image or False if  pillow can't open the file.
-    """
-    try:
-        with Image.open(filename_in, mode='r') as _:
-            logging.info(
-                f"{filename_in} is a valid image with mode={_.mode} format={_.format} size=[width:{_.width}, \
-                    height:{_.height}] info={_.info}")
-        return True
-    except:
-        logging.info(f"{filename_in} is NOT an image and will be skipped. ")
-        return False
-
-
-def try_read_image(filename_in):
-    try:
-        return Image.open(filename_in, mode='r')
-    except:
-        return None
+from handler.image import is_image, convert_to_jpeg_and_override
 
 
 def resize_with_aspect(im, filename_in, max_size):
@@ -81,11 +58,14 @@ def main(path, output_dir, max_size, dry, overwrite):
     # select images
     images = filter(is_image, files)
 
-    for f in images:
-        original = f
-        target = get_target_jpeg_with_override(f) if overwrite else get_target_jpeg(f, output_dir)
-        logging.info(f"{original} >> {target}")
-        convert_to_jpeg(original, target, max_size=max_size, overwrite=overwrite)
+    for image in images:
+        convert_to_jpeg_and_override(image)
+
+    # for f in images:
+    #     original = f
+    #     target = get_target_jpeg_with_override(f) if overwrite else get_target_jpeg(f, output_dir)
+    #     logging.info(f"{original} >> {target}")
+    #     convert_to_jpeg(original, target, max_size=max_size, overwrite=overwrite)
 
     logging.info("DONE")
 

@@ -3,11 +3,16 @@ import logging
 from typing import Tuple
 
 from PIL import Image
-
+import cv2
 from handler.file import remove_file_safely, get_file_name, get_extension
 
 
 def is_image(filename_in: str) -> bool:
+    """
+This function tries to open the file provided using the Pillow framework.
+    :param filename_in: file to be open as an image
+    :return: True if the file can be treated as an  image or False if  pillow can't open the file.
+    """
     try:
         Image.open(filename_in, mode='r')
         return True
@@ -16,6 +21,11 @@ def is_image(filename_in: str) -> bool:
 
 
 def image_size(path: str) -> Tuple[int, int]:
+    """
+Opens the image using the PIL framework and returns the size of the image.
+    :param path:
+    :return:
+    """
     try:
         with Image.open(path) as img:
             return img.size
@@ -24,7 +34,7 @@ def image_size(path: str) -> Tuple[int, int]:
 
 
 def convert_to_jpeg_and_override(image_in):
-    im = load_as_irg(image_in)
+    im = load_as_rgb(image_in)
     remove_file_safely(image_in)
     new_name = get_file_name(image_in).replace(get_extension(image_in), ".jpg")
     save_as_jpeg(im, new_name)
@@ -32,7 +42,7 @@ def convert_to_jpeg_and_override(image_in):
 
 # methods on images
 
-def load_as_irg(img_file: str) -> Image.Image:
+def load_as_rgb(img_file: str) -> Image.Image:
     im = load_image(img_file)
     im_rgb = to_rgb(im)
     return im_rgb

@@ -46,7 +46,7 @@ def xml_classes_dataframe(xmls: List[str]) -> pd.DataFrame:
     return df
 
 
-def xml_callses_fix(xmls):
+def xml_reference_fix(xmls):
     fixed = []
     with Bar('fixing xmls', max=len(xmls)) as bar:
         for xml in xmls:
@@ -78,6 +78,6 @@ def fix_reference_filename(xml_file: str) -> bool:
     if original != expected:
         root.find('filename').text = expected
         tree.write(xml_file)
-        logging.warning(f" update_path_reference --> {xml_file} [{original}]>>[{expected}]")
+        # logging.warning(f" update_path_reference --> {xml_file} [{original}]>>[{expected}]")
         return True
     return False

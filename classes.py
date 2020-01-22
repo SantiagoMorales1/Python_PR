@@ -7,7 +7,7 @@ import pandas as pd
 
 from handler.file import all_files_in
 from handler.image import is_image
-from handler.xml import xml_classes_dataframe, xml_callses_fix
+from handler.xml import xml_classes_dataframe, xml_reference_fix
 
 
 def group_name(route: str, groups: Tuple[str, str]) -> str:
@@ -51,7 +51,7 @@ def pre_process(path: str, groups: List[str]) -> Tuple[pd.DataFrame, pd.DataFram
     xmls = [f for f in files if f.endswith(".xml")]  # list all xmls in path
     images = [f for f in files if is_image(f)]  # list all images in path
     # 1. Coreccion de referencias dentro del XML
-    updated_xmls = xml_callses_fix(xmls)
+    updated_xmls = xml_reference_fix(xmls)
 
     logging.info(f"Found {len(files)} files: {len(xmls)} xmls (fixed {len(updated_xmls)}) y {len(images)} images")
     classes = xml_classes_dataframe(xmls)
