@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging
 import os
 import xml.etree.ElementTree as ET
 from typing import Tuple, List
 
 import pandas as pd
-from progress.bar import Bar
+from tqdm import tqdm
 
 from handler.file import get_file_name
 from handler.image import image_size
@@ -38,21 +37,19 @@ def class_xml_to_csv(xml_file: str) -> List[Tuple[str, str, str, int, int, str, 
 
 def xml_classes_dataframe(xmls: List[str]) -> pd.DataFrame:
     csv = []
-    with Bar('Creating df', max=len(xmls)) as bar:
-        for xml in xmls:
-            csv += class_xml_to_csv(xml)
-            bar.next()
+
+    for xml in tqdm(xmls, desc="xml: creating df"):
+        csv += class_xml_to_csv(xml)
+
     df = pd.DataFrame(csv, columns=COLUMNS)
     return df
 
 
 def xml_reference_fix(xmls):
     fixed = []
-    with Bar('fixing xmls', max=len(xmls)) as bar:
-        for xml in xmls:
-            if fix_reference_filename(xml):
-                fixed += xmls
-            bar.next()
+    for xml in tqdm(xmls, desc='xml: fixing references'):
+        if fix_reference_filename(xml):
+            fixed += xmls
     return fixed
 
 

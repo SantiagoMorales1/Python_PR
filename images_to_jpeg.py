@@ -2,7 +2,7 @@
 import logging
 
 import click
-from progress.bar import Bar
+from tqdm import tqdm
 
 from handler.file import all_files_in
 from handler.image import is_image, convert_to_jpeg_and_override
@@ -15,10 +15,8 @@ def main(path):
     images = [file for file in files if is_image(file)]
     logging.info(f"Converting {len(images)} to jpeg")
 
-    with Bar('fixing images', max=len(images)) as bar:
-        for image in images:
-            convert_to_jpeg_and_override(image)  # TODO: Paralelizar esto. multiprocessing, joblib, o ray
-            bar.next()
+    for image in tqdm(images, desc="converting to JPEG"):
+        convert_to_jpeg_and_override(image)  # TODO: Paralelizar esto. multiprocessing, joblib, o ray
 
     logging.info("DONE")
 
