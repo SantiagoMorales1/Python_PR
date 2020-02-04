@@ -3,3 +3,4 @@ Pillow
 numpy
 pandas
 click
+p_tqdm

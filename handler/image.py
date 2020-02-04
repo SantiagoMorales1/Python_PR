@@ -14,7 +14,7 @@ This function tries to open the file provided using the Pillow framework.
     :return: True if the file can be treated as an  image or False if  pillow can't open the file.
     """
     try:
-        Image.open(filename_in, mode='r')
+        im = load_image(filename_in)
         return True
     except:
         return False
@@ -22,9 +22,12 @@ This function tries to open the file provided using the Pillow framework.
 
 def image_size(path: str) -> Tuple[int, int]:
     """
-Opens the image using the PIL framework and returns the size of the image.
-    :param path:
-    :return:
+    Opens the image using the PIL framework and returns the size of the image.
+    Args:
+        path (str):
+
+    Returns:
+
     """
     try:
         with Image.open(path) as img:
@@ -38,6 +41,7 @@ def convert_to_jpeg_and_override(image_in: str):
     new_name = image_in.replace(get_extension(image_in), ".jpg")
     remove_file_safely(image_in)
     save_as_jpeg(im, new_name)
+    im.close()
 
 
 # methods on images
@@ -49,7 +53,9 @@ def load_as_rgb(img_file: str) -> Image.Image:
 
 
 def load_image(img_file: str) -> Image.Image:
-    return Image.open(img_file, mode='r')
+    with Image.open(img_file, mode='r') as im:
+        im.load()
+        return im
 
 
 def to_rgb(im: Image.Image) -> Image.Image:
