@@ -14,7 +14,7 @@ This function tries to open the file provided using the Pillow framework.
     :return: True if the file can be treated as an  image or False if  pillow can't open the file.
     """
     try:
-        im = load_image(filename_in)
+        Image.open(filename_in, mode='r')
         return True
     except:
         return False
@@ -54,7 +54,6 @@ def load_as_rgb(img_file: str) -> Image.Image:
 
 def load_image(img_file: str) -> Image.Image:
     with Image.open(img_file, mode='r') as im:
-        im.load()
         return im
 
 
