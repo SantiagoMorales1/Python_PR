@@ -54,6 +54,7 @@ def load_as_rgb(img_file: str) -> Image.Image:
 
 def load_image(img_file: str) -> Image.Image:
     with Image.open(img_file, mode='r') as im:
+        im.load()
         return im
 
 
