@@ -87,7 +87,7 @@ def main(path: str, frequencies: str, to_excel: str, groups, fix_xml_ref: bool):
     if to_excel:
         writer = pd.ExcelWriter(to_excel, engine='xlsxwriter')
         classes.to_excel(writer, sheet_name='data')
-        x.to_excel(writer, sheet_name="prescence")
+        x.to_excel(writer, sheet_name="presence")
         freq.to_excel(writer, sheet_name='frequencies')
         writer.save()
 
