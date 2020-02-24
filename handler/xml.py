@@ -53,7 +53,7 @@ def xml_reference_fix(xmls):
     return fixed
 
 
-def freq_nodes(xmls: List[str]) -> dict:
+def freq_nodes(xmls: List[str]):
     dict = {}
     for f in xmls:
         root = read_xml(f).getroot()
